@@ -16,9 +16,39 @@ from podismo.spider import Crawler as podismo
 from runedia.spider import Crawler as runedia
 
 
+appConfig = {
+    'aux_host': None,
+    'aux_port': None,
+    'spiders': [
+        {
+            "name": "podismo",
+            "crawler": podismo,
+            "running": False,
+            "results": {
+                "end": False,
+                "start": False,
+                "date": None,
+                "file": False
+            }
+        },
+        {
+            "name": "runedia",
+            "crawler": runedia,
+            "running": False,
+            "results": {
+                "end": False,
+                "start": False,
+                "date": None
+            }
+        }
+    ]
+}
+
+
 class App(object):
 
-    def __init__(self, config):
+    def __init__(self):
+        config = dict(appConfig)
         self.aux_host = config["aux_host"]
         self.aux_port = config["aux_port"]
         self.spiders = config["spiders"]
@@ -30,6 +60,9 @@ class App(object):
             Rule('/', endpoint='index'),
             Rule('/spiders/<spider_name>/<action>', endpoint='spider_caller'),
         ])
+
+    def __call__(self, environ, start_response):
+        return self.wsgi_app(environ, start_response)
 
     def render_template(self, template_name, **context):
         t = self.jinja_env.get_template(template_name)
@@ -48,9 +81,6 @@ class App(object):
         response = self.dispatch_request(request)
         return response(environ, start_response)
 
-    def __call__(self, environ, start_response):
-        return self.wsgi_app(environ, start_response)
-
     def is_valid_url(self, url):
         parts = urlparse(url)
         return parts.scheme in ('http', 'https')
@@ -62,6 +92,9 @@ class App(object):
             return redirect(NotFound())
 
     def on_spider_caller(self, request, **arguments):
+        if request.method != "GET":
+            return
+
         for spider_state in self.spiders:
             if spider_state["name"] == arguments["spider_name"]:
                 spider = spider_state
@@ -93,8 +126,11 @@ class App(object):
             spider["process"].terminate()
             spider["running"] = False
             return Response(json.dumps({"success": True}))
+
         elif arguments['action'] == 'get_file':
-            return Response(open(file_path).read(), headers={
+            response = open(file_path).read()
+            open(file_path, 'w').close()
+            return Response(response, headers={
                 "Content-Disposition": "attachment; filename='{!s}.csv'".format(spider["name"]),
                 "Content-Type": "text/plain",
                 "Access-Controll-Allow-Origin": "*"
@@ -114,34 +150,8 @@ class App(object):
         spider.on_end(end_callback)
 
 
-def create_app(aux_host='localhost', aux_port=6379, with_static=True):
-    app = App({
-        'aux_host':       aux_host,
-        'aux_port':       aux_port,
-        'spiders': [
-            {
-                "name": "podismo",
-                "crawler": podismo,
-                "running": False,
-                "results": {
-                    "end": False,
-                    "start": False,
-                    "date": None,
-                    "file": False
-                }
-            },
-            {
-                "name": "runedia",
-                "crawler": runedia,
-                "running": False,
-                "results": {
-                    "end": False,
-                    "start": False,
-                    "date": None
-                }
-            }
-        ]
-    })
+def create_app(with_static=True):
+    app = App()
 
     if with_static:
         app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
@@ -155,3 +165,5 @@ if __name__ == '__main__':
     from werkzeug.serving import run_simple
     app = create_app()
     run_simple('127.0.0.1', 5001, app, use_debugger=True, use_reloader=True)
+else:
+    application = create_app()

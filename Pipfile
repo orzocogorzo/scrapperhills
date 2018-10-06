@@ -8,6 +8,7 @@ scrapy = "*"
 requests = "*"
 werkzeug = "*"
 "jinja2" = "*"
+gunicorn = "*"
 
 [dev-packages]
 
