@@ -1,0 +1,72 @@
+body {margin: 0; padding: 0; width: 100%; display: flex; flex-direction: column}
+ul {list-style-type: none;}
+p, h1, h2, h3, h4, h5, li {padding: 0px; margin: 0px}
+
+#app {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    font-family: Lucida, sans-serif;
+    color: #222222;
+}
+
+#app ul {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+#app ul li {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex-direction: column;
+}
+
+#app ul li:not(:first-child) {
+    margin-top: 30px;
+}
+
+li div.title {
+    font-size: 2em;
+}
+
+li div.actions {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    width: 100%;
+    justify-content: space-around;
+    padding: 0px 100px;
+    height: 35px;
+    margin: 10px 0px;
+}
+
+li div.actions > div {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 2px 2px 3px 3px #444444;
+    max-width: 100px;
+    cursor: pointer;
+    transition: transform 0.1s ease-out;
+}
+
+li div.actions > div:not(.active) {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: default;
+}
+
+li div.actions > div:hover {
+    color: #ff8800;
+}
+
+li div.actions > div:active {
+    transform: translate(0.5px,0.5px);
+}

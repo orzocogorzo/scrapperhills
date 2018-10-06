@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CrawlersLand</title>
+    <link href="statics/main.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <div id="app">
+        <ul>
+        {% for spider in spiders %}
+          <li>
+              <div class="title">{{spider.name}}</div>
+              <div class="actions">
+                  <div spiderName="{{spider['name']}}" class="btn start {% if not spider['running'] %}active{% endif %}">RUN</div>
+                  <div spiderName="{{spider['name']}}" class="btn stop {% if spider['running'] %}active{% endif %}">STOP</div>
+                  <div spiderName="{{spider['name']}}" class="btn getFile {% if spider['results']['file'] %}active{% endif %}">FILE</div>
+              </div>
+              {% if spider['results']['start'] %}<div class="last_date">Fecha inicio: {{spider['results']['date']}} terminado: No </div>{% endif %}
+              {% if spider['results']['end'] %}<div class="last_date">Fecha finalización: {{spider['results']['date']}} terminado: Sí </div>{% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+    <script src="/statics/index.js" type="application/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+*.lock
+.idea/
+.vscode/
+*.csv
+*.csv#
+*.pyc
+__pycache__
