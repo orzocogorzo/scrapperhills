@@ -158,6 +158,9 @@ def create_app(with_static=True):
             '/statics':  os.path.join(os.path.dirname(__file__), 'statics')
         })
 
+    if not os.path.isdir('results'):
+        os.mkdir('results')
+
     return app
 
 
