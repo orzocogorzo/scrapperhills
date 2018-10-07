@@ -18,6 +18,7 @@ class SingerMorning:
             self.process[spider_name].terminate()
 
         p = Process(target=self.ring_ring, args=(300,))
+        p.start()
         self.process[spider_name] = p
 
     def end_singing(self, spider_name):
