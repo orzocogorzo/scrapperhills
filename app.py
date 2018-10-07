@@ -15,6 +15,8 @@ from jinja2 import Environment, FileSystemLoader
 from podismo.spider import Crawler as podismo
 from runedia.spider import Crawler as runedia
 
+from singer_morning import SingerMorning
+
 
 appConfig = {
     'aux_host': None,
@@ -120,11 +122,13 @@ class App(object):
                 "end": False,
                 "file": True
             }
+            self.singer_morning.start_singing(spider["name"])
             return Response(json.dumps({"success": True}))
 
         elif arguments['action'] == 'stop':
             spider["process"].terminate()
             spider["running"] = False
+            self.singer_morning.end_singing(spider["name"])
             return Response(json.dumps({"success": True}))
 
         elif arguments['action'] == 'get_file':
@@ -160,6 +164,8 @@ def create_app(with_static=True):
 
     if not os.path.isdir('results'):
         os.mkdir('results')
+
+    SingerMorning(app)
 
     return app
 
