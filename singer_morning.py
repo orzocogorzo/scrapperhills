@@ -9,8 +9,9 @@ class SingerMorning:
         self.process = {spider["name"]: False for spider in self.app.spiders}
 
     def ring_ring(self, delta):
-        req.get('https://scrappers-watchdog.herokuapp.com/')
-        sleep(delta)
+        while True:
+            req.get('https://scrappers-watchdog.herokuapp.com/')
+            sleep(delta)
 
     def start_singing(self, spider_name):
         if self.process[spider_name]:
